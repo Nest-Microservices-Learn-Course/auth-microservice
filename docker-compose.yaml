@@ -1,0 +1,12 @@
+services:
+  auth-db:
+    container_name: auth_database
+    image: mongo:7.0
+    restart: always
+    volumes:
+      - ./mongo:/data/db
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongo
+      - MONGO_INITDB_ROOT_PASSWORD=123456

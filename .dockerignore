@@ -9,4 +9,4 @@ Dockerfile
 .vscode/
 *.log
 *.md
-postgres/
+mongo/
