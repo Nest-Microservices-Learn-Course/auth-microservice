@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { LoginUserDto, RegisterUserDto } from './dto';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AuthService {
-  registerUser(payload: RegisterUserDto) {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async registerUser(payload: RegisterUserDto) {
+    const user = await this.prisma.user.findMany();
+    console.log({ user });
     return payload;
   }
 
