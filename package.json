@@ -12,7 +12,7 @@
     "start:dev": "yarn prisma:docker && nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "prisma:docker": "yarn prisma generate",
+    "prisma:docker": "yarn prisma db push &&yarn prisma generate",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",

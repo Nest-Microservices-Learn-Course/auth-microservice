@@ -1,98 +1,265 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Authentication Microservice
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+A NestJS-based microservice for user authentication with Prisma ORM and MongoDB database.
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This is an authentication microservice built with NestJS framework. It provides user registration, login, and token verification functionality with MongoDB as the database. The service uses Prisma ORM with MongoDB configured as a replica set to support transactions.
 
-## Project setup
+## Prerequisites
 
-```bash
-$ pnpm install
-```
+Before you begin, ensure you have the following installed:
+- Node.js (v18 or higher)
+- npm, yarn or pnpm
+- Docker and Docker Compose
+- Git
+- OpenSSL (for generating MongoDB keyfile)
 
-## Compile and run the project
+## Installation and Setup
 
-```bash
-# development
-$ pnpm run start
+Follow these steps to set up the project locally:
 
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
-```
-
-## Run tests
+### 1. Clone the Repository
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+git clone https://github.com/gerardogrz/nestjs-microservices.git
+cd auth-ms
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 2. Install Dependencies
 
 ```bash
-$ pnpm install -g @nestjs/mau
-$ mau deploy
+# Using npm
+npm install
+
+# Or using yarn
+yarn install
+
+# Or using pnpm
+pnpm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 3. Environment Configuration
 
-## Resources
+Copy the environment template and configure your environment variables:
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+cp .env.template .env
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Edit the `.env` file with your specific configuration.
 
-## Support
+### 4. MongoDB Replica Set Setup
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+This service requires MongoDB to run as a replica set for Prisma transactions to work properly.
 
-## Stay in touch
+#### 4.1 Generate MongoDB Keyfile
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+# Create keyfile directory
+mkdir -p keyfile
 
-## License
+# Generate keyfile
+openssl rand -base64 756 > keyfile/keyfile
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+# Set proper permissions
+chmod 600 keyfile/keyfile
+
+# Set ownership for Docker (Ubuntu/Debian)
+sudo chown -R 999:999 keyfile
+```
+
+**Important**: The `keyfile/keyfile` is already included in `.gitignore` for security.
+
+#### 4.2 Start MongoDB with Docker Compose
+
+From the root directory of the project:
+
+```bash
+# Start only the database service
+docker compose up -d auth-database
+
+# Wait for MongoDB to start
+sleep 10
+
+# Initiate the replica set
+docker exec -it auth_database mongosh -u mongo -p 123456 --authenticationDatabase admin --eval "rs.initiate()"
+```
+
+The replica set configuration is stored in the MongoDB data volume and will persist across container restarts.
+
+### 5. Database Setup
+
+Generate Prisma client and sync the schema:
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Push schema to database (recommended for development)
+npx prisma db push
+
+# Or use the convenience script
+yarn prisma:docker
+```
+
+## Running the Application
+
+### Development Mode
+
+```bash
+# Using npm
+npm run start:dev
+
+# Or using yarn
+yarn start:dev
+
+# Or using pnpm
+pnpm start:dev
+```
+
+The application will start in watch mode with hot reload.
+
+### Production Mode
+
+```bash
+# Build the application
+npm run build
+
+# Run in production mode
+npm run start:prod
+```
+
+### Running with Docker
+
+```bash
+# From root directory
+docker compose up -d auth-ms
+
+# Or with database
+docker compose up -d auth-database auth-ms
+```
+
+## Available Scripts
+
+- `npm run start` - Start the application
+- `npm run start:dev` - Start in development mode with hot reload
+- `npm run start:debug` - Start in debug mode
+- `npm run start:prod` - Start in production mode
+- `npm run build` - Build the application
+- `npm run test` - Run unit tests
+- `npm run test:e2e` - Run end-to-end tests
+- `npm run test:cov` - Run tests with coverage
+- `npm run lint` - Run ESLint
+- `npm run format` - Format code with Prettier
+- `yarn prisma:docker` - Generate Prisma client and push schema
+
+## API Documentation
+
+The microservice exposes the following endpoints through NATS messaging:
+
+- `auth.register.user` - Register a new user
+- `auth.login.user` - User login
+- `auth.verify.user` - Verify user token
+
+## Project Structure
+
+```
+src/
+├── auth/              # Authentication module
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   └── dto/           # Data transfer objects
+├── commons/           # Common utilities and DTOs
+├── config/            # Configuration files
+├── prisma/            # Prisma database service
+├── generated/         # Generated Prisma client
+├── app.module.ts      # Root module
+└── main.ts           # Application entry point
+```
+
+## Technologies Used
+
+- **NestJS** - Progressive Node.js framework
+- **Prisma** - Next-generation ORM
+- **MongoDB** - NoSQL database with replica set
+- **TypeScript** - Typed JavaScript
+- **NATS** - Message broker for microservices
+- **Class-validator** - Validation decorators
+
+## Troubleshooting
+
+### MongoDB Replica Set Issues
+
+If you encounter the following error when making requests to the auth service:
+
+```json
+{
+  "status": 400,
+  "message": "Prisma needs to perform transactions, which requires your MongoDB server to be run as a replica set"
+}
+```
+
+Or see MongoDB logs with errors like:
+- `"No primary exists currently"`
+- `"ReadConcernMajorityNotAvailableYet"`
+- `"Our replica set config is invalid or we are not a member of it"`
+
+#### Solution Steps
+
+1. **Stop the auth database container**:
+   ```bash
+   docker compose stop auth-database
+   ```
+
+2. **Restart the container**:
+   ```bash
+   docker compose up -d auth-database
+   ```
+
+3. **Wait for MongoDB to start** (10-15 seconds):
+   ```bash
+   sleep 15
+   ```
+
+4. **Reconfigure the replica set**:
+   ```bash
+   docker exec -it auth_database mongosh -u mongo -p 123456 --authenticationDatabase admin --eval "rs.reconfig({_id: 'rs0', members: [{_id: 0, host: 'auth_database:27017'}]}, {force: true})"
+   ```
+
+5. **Verify the replica set status**:
+   ```bash
+   docker exec -it auth_database mongosh -u mongo -p 123456 --authenticationDatabase admin --eval "rs.status()"
+   ```
+
+6. **Restart the auth service**:
+   ```bash
+   docker compose up -d auth-ms
+   ```
+
+#### Prevention Tips
+
+- **Use `docker compose down` (without `-v`)** to preserve replica set data during development
+- **Avoid force-stopping containers** which can corrupt replica set state
+- **Check replica set health** if containers were stopped abruptly: `docker exec auth_database mongosh -u mongo -p 123456 --authenticationDatabase admin --eval "rs.status()"`
+
+## Important Notes
+
+### MongoDB Replica Set
+
+- The MongoDB service is configured as a replica set (`rs0`)
+- Replica set is required for Prisma transactions to work
+- The replica set configuration persists in the data volume
+- Only needs to be initiated once per fresh database setup
+
+### Security
+
+- MongoDB keyfile is ignored by git for security
+- Each environment should generate its own keyfile
+- Never commit authentication keys to version control
+
+### Development Workflow
+
+- The replica set configuration survives container rebuilds
+- Only regenerate keyfile if compromised
+- Use `docker compose down` (without `-v`) to preserve data during development

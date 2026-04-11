@@ -60,3 +60,4 @@ mongo
 generated
 
 /generated/prisma
+/keyfile

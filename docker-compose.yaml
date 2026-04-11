@@ -5,8 +5,10 @@ services:
     restart: always
     volumes:
       - ./mongo:/data/db
+      - ./auth-ms/keyfile:/opt/keyfile
     ports:
       - 27017:27017
     environment:
       - MONGO_INITDB_ROOT_USERNAME=mongo
       - MONGO_INITDB_ROOT_PASSWORD=123456
+    command: mongod --replSet rs0 --bind_ip_all --keyFile /opt/keyfile/keyfile --auth
