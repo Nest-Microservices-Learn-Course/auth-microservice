@@ -3,10 +3,15 @@ import { LoginUserDto, RegisterUserDto } from './dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './interfaces/jwt.payload.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   async registerUser(payload: RegisterUserDto) {
     const { email, name, password } = payload;
@@ -29,7 +34,7 @@ export class AuthService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password: _, ...user } = newUser;
 
-      return { user, token: 'abc' };
+      return { user, token: this.signJwt(user) };
     } catch (error) {
       throw new RpcException({
         status: 400,
@@ -66,7 +71,7 @@ export class AuthService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password: _, ...user } = existingUser;
 
-      return { user, token: 'abc' };
+      return { user, token: this.signJwt(user) };
     } catch (error) {
       throw new RpcException({
         status: 400,
@@ -77,5 +82,9 @@ export class AuthService {
 
   verifyUser() {
     return 'verify user token';
+  }
+
+  private signJwt(payload: JwtPayload) {
+    return this.jwtService.sign(payload);
   }
 }
