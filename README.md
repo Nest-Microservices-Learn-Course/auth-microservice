@@ -189,6 +189,46 @@ src/
 
 ## Troubleshooting
 
+### MongoDB Compass Connection Issues
+
+When connecting to MongoDB with external tools like MongoDB Compass, you may encounter connection issues due to the replica set configuration.
+
+#### Problem
+Standard MongoDB connection strings fail when connecting to a replica set configured MongoDB instance:
+```
+mongodb://mongo:123456@localhost:27017/admin
+```
+
+#### Solutions
+
+**Option 1: Direct Connection (Recommended for Development)**
+```
+mongodb://mongo:123456@localhost:27017/admin?directConnection=true
+```
+
+**Option 2: Full Replica Set Connection**
+```
+mongodb://mongo:123456@localhost:27017/admin?replicaSet=rs0&authSource=admin
+```
+
+#### Why This Happens
+
+- **Replica Set Discovery**: Standard connections attempt to discover the replica set topology
+- **Network Issues**: External tools may not resolve the replica set configuration properly
+- **Authentication**: Replica sets require proper authentication source specification
+
+#### Connection Parameters Explained
+
+- `directConnection=true`: Bypasses replica set discovery, connects directly to the specified host
+- `replicaSet=rs0`: Explicitly specifies the replica set name
+- `authSource=admin`: Specifies the authentication database
+
+#### When to Use Each Connection Type
+
+- **Development**: Use `directConnection=true` for simplicity and reliability
+- **Production**: Use full replica set connection for high availability and failover
+- **Testing**: Either option works, but direct connection is faster
+
 ### MongoDB Replica Set Issues
 
 If you encounter the following error when making requests to the auth service:

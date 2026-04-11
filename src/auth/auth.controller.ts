@@ -2,16 +2,10 @@ import { Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { LoginUserDto, RegisterUserDto } from './dto';
-// import { Inject } from '@nestjs/common';
-// import { NATS_SERVICE } from 'src/config';
-// import { ClientProxy } from '@nestjs/microservices';
 
 @Controller()
 export class AuthController {
-  constructor(
-    // @Inject(NATS_SERVICE) private readonly client: ClientProxy,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @MessagePattern('auth.register.user')
   registerUser(@Payload() payload: RegisterUserDto) {
