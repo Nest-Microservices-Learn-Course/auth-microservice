@@ -5,6 +5,8 @@ import { RpcException } from '@nestjs/microservices';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt.payload.interface';
+import { envs } from 'src/config';
+import { TokenPayload } from './interfaces';
 
 @Injectable()
 export class AuthService {
@@ -80,8 +82,23 @@ export class AuthService {
     }
   }
 
-  verifyUser() {
-    return 'verify user token';
+  verifyUser(token: string) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { exp, iat, ...user } = this.jwtService.verify<TokenPayload>(
+        token,
+        {
+          secret: envs.jwtSecret,
+        },
+      );
+      return { user, token: this.signJwt(user) };
+    } catch (error) {
+      console.log(error.message);
+      throw new RpcException({
+        status: 401,
+        message: 'Invalid token',
+      });
+    }
   }
 
   private signJwt(payload: JwtPayload) {
