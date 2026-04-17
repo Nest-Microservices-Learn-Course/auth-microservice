@@ -1,0 +1,64 @@
+# dependency installer
+FROM node:25-alpine3.22 AS deps
+
+WORKDIR /usr/src/app
+
+# Copy package files first for better layer caching
+COPY package.json yarn.lock ./
+
+# Install dependencies with yarn cache optimization
+RUN yarn install --frozen-lockfile --network-timeout 1000000 && \
+    yarn cache clean
+
+# builder stage
+FROM node:25-alpine3.22 AS builder
+
+WORKDIR /usr/src/app
+
+# Copy installed dependencies
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+
+# Copy source code
+COPY . .
+
+RUN yarn prisma generate
+
+# Install Nest CLI globally and build
+RUN yarn global add @nestjs/cli --frozen-lockfile && \
+    yarn build
+
+
+# production stage - use smaller base image
+FROM node:25-alpine3.22 AS prod
+
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
+WORKDIR /usr/src/app
+
+# Create non-root user first
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
+
+# Copy package files and install only production dependencies
+COPY package.json yarn.lock ./
+
+# Install production dependencies without dev dependencies
+RUN yarn install --frozen-lockfile --production --network-timeout 1000000 && \
+    yarn cache clean
+
+# Copy built application from builder stage
+COPY --from=builder /usr/src/app/dist ./dist
+
+# Change ownership to non-root user
+RUN chown -R nodejs:nodejs /usr/src/app
+
+USER nodejs
+
+ENV NODE_ENV=production
+
+EXPOSE 3000
+
+# Use dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "dist/main.js"]
