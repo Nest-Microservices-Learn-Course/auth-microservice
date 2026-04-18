@@ -1,6 +1,9 @@
 # dependency installer
 FROM node:25-alpine3.22 AS deps
 
+ARG AUTH_DATABASE_URL
+ENV DATABASE_URL=$AUTH_DATABASE_URL
+
 WORKDIR /usr/src/app
 
 # Copy package files first for better layer caching
@@ -12,6 +15,9 @@ RUN yarn install --frozen-lockfile --network-timeout 1000000 && \
 
 # builder stage
 FROM node:25-alpine3.22 AS builder
+
+ARG AUTH_DATABASE_URL
+ENV DATABASE_URL=$AUTH_DATABASE_URL
 
 WORKDIR /usr/src/app
 
@@ -49,6 +55,7 @@ RUN yarn install --frozen-lockfile --production --network-timeout 1000000 && \
 
 # Copy built application from builder stage
 COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/generated ./generated
 
 # Change ownership to non-root user
 RUN chown -R nodejs:nodejs /usr/src/app
@@ -61,4 +68,4 @@ EXPOSE 3000
 
 # Use dumb-init for proper signal handling
 ENTRYPOINT ["dumb-init", "--"]
-CMD ["node", "dist/main.js"]
+CMD ["node", "dist/src/main.js"]
